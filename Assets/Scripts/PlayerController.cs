@@ -13,19 +13,15 @@ public class PlayerController : MonoBehaviour
     public bool canJump = true;
     private int amountOfJumpsLeft;
     public int amountOfJumps = 1;
-    
-    
+
     private float movementInputDirection;
     private float movementSpeed = 10.0f;
     private float jumpForce = 16.0f;
     public float groundCheckRadius;
-    
-    
+
     public Transform groundCheck;
     public LayerMask whatIsGround;
     
-    
-
     // Start is called before the first frame update
     void Start()
     {
@@ -77,6 +73,8 @@ public class PlayerController : MonoBehaviour
     private void UpdateAnimations()
     {
         anim.SetBool("isWalking", isWalking);
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("yVelocity", rb.velocity.y);
     }
 
     private void CheckInput()
@@ -110,9 +108,13 @@ public class PlayerController : MonoBehaviour
         }
 
         if (rb.velocity.x != 0)
+        {
             isWalking = true;
+        }
         else
+        {
             isWalking = false;
+        }
     }
 
     private void ApplyMovement()
