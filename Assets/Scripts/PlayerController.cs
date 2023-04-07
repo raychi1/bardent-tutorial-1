@@ -7,10 +7,12 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    
     private bool isFacingRight = true;
     private bool isWalking;
     public bool isGrounded;
     public bool canJump = true;
+    
     private int amountOfJumpsLeft;
     public int amountOfJumps = 1;
 
@@ -50,26 +52,6 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 
-    private void CheckIfCanJump()
-    {
-        if (isGrounded && rb.velocity.y <= 0)
-        {
-            amountOfJumpsLeft = amountOfJumps;
-        }
-
-        if (amountOfJumpsLeft <= 0)
-        {
-            canJump = false;
-        }
-        else
-            canJump = true;
-    }
-    
-    private void CheckSurroundings()
-    {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
-    }
-
     private void UpdateAnimations()
     {
         anim.SetBool("isWalking", isWalking);
@@ -86,16 +68,7 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
     }
-
-    private void Jump()
-    {
-        if (canJump)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            amountOfJumpsLeft--;
-        }
-    }
-
+    
     private void CheckMovementDirection()
     {
         if (isFacingRight && movementInputDirection < 0)
@@ -116,13 +89,42 @@ public class PlayerController : MonoBehaviour
             isWalking = false;
         }
     }
+    
+    private void CheckSurroundings()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+    }
+    
+    private void CheckIfCanJump()
+    {
+        if (isGrounded && rb.velocity.y <= 0)
+        {
+            amountOfJumpsLeft = amountOfJumps;
+        }
+
+        if (amountOfJumpsLeft <= 0)
+        {
+            canJump = false;
+        }
+        else
+            canJump = true;
+    }
 
     private void ApplyMovement()
     {
         rb.velocity = new Vector2(movementSpeed * movementInputDirection, rb.velocity.y);
         anim.SetBool("isWalking", isWalking);
     }
-
+    
+    private void Jump()
+    {
+        if (canJump)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            amountOfJumpsLeft--;
+        }
+    }
+    
     private void Flip()
     {
         isFacingRight = !isFacingRight;
