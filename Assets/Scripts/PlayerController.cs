@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     
     private bool isFacingRight = true;
     private bool isWalking;
+    public bool isTouchingWall;
     public bool isGrounded;
     public bool canJump = true;
     
@@ -20,8 +21,10 @@ public class PlayerController : MonoBehaviour
     private float movementSpeed = 10.0f;
     private float jumpForce = 16.0f;
     public float groundCheckRadius;
+    public float wallCheckDistance;
 
     public Transform groundCheck;
+    public Transform wallCheck;
     public LayerMask whatIsGround;
     
     // Start is called before the first frame update
@@ -45,11 +48,6 @@ public class PlayerController : MonoBehaviour
     {
         CheckSurroundings();
         ApplyMovement();
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 
     private void UpdateAnimations()
@@ -93,6 +91,8 @@ public class PlayerController : MonoBehaviour
     private void CheckSurroundings()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+
+        isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, whatIsGround); //transform.right is used to project to the right side of a character (so if we flip, it will work on left no problem)
     }
     
     private void CheckIfCanJump()
@@ -129,5 +129,12 @@ public class PlayerController : MonoBehaviour
     {
         isFacingRight = !isFacingRight;
         transform.Rotate(0.0f, 180.0f, 0.0f);
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        
+        Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y, wallCheck.position.z));
     }
 }
