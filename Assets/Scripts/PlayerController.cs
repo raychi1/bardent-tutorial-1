@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private bool isFacingRight = true;
     private bool isWalking;
     public bool isTouchingWall;
+    public bool isWallSliding;
     public bool isGrounded;
     public bool canJump = true;
     
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
     private float jumpForce = 16.0f;
     public float groundCheckRadius;
     public float wallCheckDistance;
+    public float wallSlideSpeed;
 
     public Transform groundCheck;
     public Transform wallCheck;
@@ -42,6 +44,7 @@ public class PlayerController : MonoBehaviour
         CheckMovementDirection();
         UpdateAnimations();
         CheckIfCanJump();
+        CheckIfWallSliding();
     }
 
     private void FixedUpdate()
@@ -55,6 +58,7 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isWalking", isWalking);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("yVelocity", rb.velocity.y);
+        anim.SetBool("isWallSliding", isWallSliding);
     }
 
     private void CheckInput()
@@ -110,10 +114,28 @@ public class PlayerController : MonoBehaviour
             canJump = true;
     }
 
+    private void CheckIfWallSliding()
+    {
+        if (isTouchingWall && !isGrounded && rb.velocity.y < 0)
+        {
+            isWallSliding = true;
+        }
+        else
+            isWallSliding = false;
+    }
+
     private void ApplyMovement()
     {
         rb.velocity = new Vector2(movementSpeed * movementInputDirection, rb.velocity.y);
         anim.SetBool("isWalking", isWalking);
+
+        if (isWallSliding)
+        {
+            if (rb.velocity.y < -wallSlideSpeed)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
+            }
+        }
     }
     
     private void Jump()

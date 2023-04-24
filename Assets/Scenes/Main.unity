@@ -20039,11 +20039,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchingWall: 0
+  isWallSliding: 0
   isGrounded: 0
   canJump: 0
   amountOfJumps: 2
   groundCheckRadius: 0.3
   wallCheckDistance: 0.4
+  wallSlideSpeed: 0
   groundCheck: {fileID: 1170534988}
   wallCheck: {fileID: 1358880082}
   whatIsGround:
