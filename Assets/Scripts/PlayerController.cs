@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     public float wallCheckDistance;
     public float wallSlideSpeed;
     public float movementForceInAir;
+    public float airDragMultiplier = 0.95f; //how fast to stop x movement if we stop giving horizontal movement input mid-air (less = faster, 0 - immediately)
 
     public Transform groundCheck;
     public Transform wallCheck;
@@ -140,6 +141,10 @@ public class PlayerController : MonoBehaviour
             {
                 rb.velocity = new Vector2(movementSpeed * movementInputDirection, rb.velocity.y);
             }
+        }
+        else if (!isGrounded && !isWallSliding && movementInputDirection == 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x * airDragMultiplier, rb.velocity.y);
         }
 
         if (isWallSliding)

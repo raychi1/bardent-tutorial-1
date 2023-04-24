@@ -20047,6 +20047,7 @@ MonoBehaviour:
   wallCheckDistance: 0.4
   wallSlideSpeed: 2
   movementForceInAir: 10
+  airDragMultiplier: 0.95
   groundCheck: {fileID: 1170534988}
   wallCheck: {fileID: 1358880082}
   whatIsGround:
