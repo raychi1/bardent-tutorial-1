@@ -20043,11 +20043,17 @@ MonoBehaviour:
   isGrounded: 0
   canJump: 0
   amountOfJumps: 2
+  facingDirection: 1
   groundCheckRadius: 0.3
   wallCheckDistance: 0.4
   wallSlideSpeed: 2
   movementForceInAir: 10
   airDragMultiplier: 0.95
+  variableJumpHeightMultiplier: 0.5
+  wallHopForce: 10
+  wallJumpForce: 20
+  wallHopDirection: {x: 1, y: 0.5}
+  wallJumpDirection: {x: 1, y: 2}
   groundCheck: {fileID: 1170534988}
   wallCheck: {fileID: 1358880082}
   whatIsGround:
