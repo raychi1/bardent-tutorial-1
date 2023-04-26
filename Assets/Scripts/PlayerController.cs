@@ -28,11 +28,11 @@ public class PlayerController : MonoBehaviour
     public float movementForceInAir;
     public float airDragMultiplier = 0.95f; //how fast to stop x movement if we stop giving horizontal movement input mid-air (less = faster, 0 - immediately)
     public float variableJumpHeightMultiplier = 0.5f;
-    public float wallHopForce;
-    public float wallJumpForce;
+    public float wallHopForce = 10f;
+    public float wallJumpForce = 20f;
 
-    public Vector2 wallHopDirection;
-    public Vector2 wallJumpDirection;
+    public Vector2 wallHopDirection = new Vector2(1f, 0.5f);
+    public Vector2 wallJumpDirection = new Vector2(1f, 2f);
 
     public Transform groundCheck;
     public Transform wallCheck;
@@ -183,7 +183,6 @@ public class PlayerController : MonoBehaviour
             amountOfJumpsLeft--;
             Vector2 forceToAdd = new Vector2(wallHopForce * wallHopDirection.x * -facingDirection, wallHopForce * wallHopDirection.y);
             rb.AddForce(forceToAdd, ForceMode2D.Impulse);
-            Debug.Log("Wall Hop");
         }
         else if (!isGrounded && isTouchingWall && movementInputDirection != 0) // Wall Jump
         {
@@ -191,7 +190,6 @@ public class PlayerController : MonoBehaviour
             amountOfJumpsLeft--;
             Vector2 forceToAdd = new Vector2(wallJumpForce * wallJumpDirection.x * movementInputDirection, wallJumpForce * wallJumpDirection.y);
             rb.AddForce(forceToAdd, ForceMode2D.Impulse);
-            Debug.Log("Wall Jump");
         }
     }
     

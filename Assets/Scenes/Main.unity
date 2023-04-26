@@ -148,7 +148,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 347650575}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.4665935, y: 3.9380932, z: -10.0777645}
+  m_LocalPosition: {x: -2.5965934, y: 3.2980928, z: -10.0777645}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4385,7 +4385,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.4665935, y: 3.9380932, z: -10.0777645}
+  m_LocalPosition: {x: -2.5965934, y: 3.2980928, z: -10.0777645}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20017,7 +20017,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1740599538}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.97, y: 12.17, z: 0}
+  m_LocalPosition: {x: -2.1, y: 11.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20043,7 +20043,6 @@ MonoBehaviour:
   isGrounded: 0
   canJump: 0
   amountOfJumps: 2
-  facingDirection: 1
   groundCheckRadius: 0.3
   wallCheckDistance: 0.4
   wallSlideSpeed: 2
