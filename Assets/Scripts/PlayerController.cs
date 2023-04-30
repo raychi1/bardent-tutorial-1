@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private bool canNormalJump = true;
     private bool canWallJump;
     private bool checkJumpMultiplier;
+    private bool canMove;
+    private bool canFlip;
     public bool isTouchingWall;
     public bool isWallSliding;
     public bool isGrounded;
@@ -23,18 +25,20 @@ public class PlayerController : MonoBehaviour
     public int amountOfJumps = 1;
 
     private float movementInputDirection;
-    private float movementSpeed = 10.0f;
-    private float jumpForce = 16.0f;
     private float jumpTimer;
+    private float turnTimer;
+    public float movementSpeed = 9.0f;
+    public float jumpForce = 20.0f;
     public float jumpTimerSet = 0.15f;
+    public float turnTimerSet = 0.1f;
     public float groundCheckRadius;
-    public float wallCheckDistance;
-    public float wallSlideSpeed;
+    public float wallCheckDistance = 0.65f;
+    public float wallSlideSpeed = 1;
     public float movementForceInAir;
     public float airDragMultiplier = 0.95f; //how fast to stop x movement if we stop giving horizontal movement input mid-air (less = faster, 0 - immediately)
     public float variableJumpHeightMultiplier = 0.5f;
     public float wallHopForce = 10f;
-    public float wallJumpForce = 20f;
+    public float wallJumpForce = 30f; //old is 20
     
     public Vector2 wallHopDirection = new Vector2(1f, 0.5f);
     public Vector2 wallJumpDirection = new Vector2(1f, 2f);
@@ -94,11 +98,33 @@ public class PlayerController : MonoBehaviour
                 isAttemptingToJump = true;
             }
         }
-        if (checkJumpMultiplier && !Input.GetButton("Jump"))
+
+        if (Input.GetButtonDown("Horizontal") && isTouchingWall) // wall jump timer (no matter which key pressed first
+        //horizontal input or jump)
+        {
+            if (!isGrounded && movementInputDirection != facingDirection)
+            {
+                canMove = false;
+                canFlip = false;
+
+                turnTimer = turnTimerSet;
+            }
+        }
+
+        if (!canMove)
+        {
+            turnTimer -= Time.deltaTime;
+            if (turnTimer <= 0)
+            {
+                canMove = true;
+                canFlip = true;
+            }
+        }
+        
+        if (checkJumpMultiplier && !Input.GetButton("Jump")) // fall after releasing jump - variable jump height
         {
             checkJumpMultiplier = false;
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * variableJumpHeightMultiplier); // to start
-            // falling as soon as jump button is unpressed.
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * variableJumpHeightMultiplier);
         }
     }
     
@@ -174,7 +200,7 @@ public class PlayerController : MonoBehaviour
             // which make rb.velocity.x reach zero faster. So if we remove airDragMultiplier, x velocity will be slowing
             // down longer and player will feel more heavy, less in our control.  
         }
-        else //isGrounded
+        else if (canMove)// isGrounded
         {
             rb.velocity = new Vector2(movementSpeed * movementInputDirection, rb.velocity.y);// immediately set
             // rb.velocity.x to zero if no input and on the ground.
@@ -218,6 +244,7 @@ public class PlayerController : MonoBehaviour
             jumpTimer = 0;
             isAttemptingToJump = false;
             checkJumpMultiplier = true;
+            Debug.Log("Normal jump");
         }
     }
 
@@ -229,17 +256,22 @@ public class PlayerController : MonoBehaviour
             isWallSliding = false;
             amountOfJumpsLeft = amountOfJumps;
             amountOfJumpsLeft--;
-            Vector2 forceToAdd = new Vector2(wallJumpForce * wallJumpDirection.x * movementInputDirection, wallJumpForce * wallJumpDirection.y);
+            Vector2 forceToAdd = new Vector2(wallJumpForce * wallJumpDirection.x * movementInputDirection,
+                wallJumpForce * wallJumpDirection.y);
             rb.AddForce(forceToAdd, ForceMode2D.Impulse);
             jumpTimer = 0;
             isAttemptingToJump = false;
             checkJumpMultiplier = true;
+            turnTimer = 0;
+            canMove = true;
+            canFlip = true;
+            Debug.Log("Wall jump");
         }
     }
     
     private void Flip()
     {
-        if (!isWallSliding)
+        if (!isWallSliding && canFlip)
         {
             facingDirection *= -1;
             isFacingRight = !isFacingRight;
