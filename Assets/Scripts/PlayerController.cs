@@ -170,6 +170,7 @@ public class PlayerController : MonoBehaviour
 
         if (isTouchingWall)
         {
+            checkJumpMultiplier = false;
             canWallJump = true;
         }
 
@@ -185,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
     private void CheckIfWallSliding()
     {
-        if (isTouchingWall && !isGrounded && rb.velocity.y < 0)
+        if (isTouchingWall && movementInputDirection == facingDirection && rb.velocity.y < 0)
         {
             isWallSliding = true;
         }
@@ -224,7 +225,7 @@ public class PlayerController : MonoBehaviour
     {
         if(jumpTimer > 0)
         {
-            if (isGrounded && isTouchingWall && movementInputDirection != 0 && movementInputDirection != facingDirection)
+            if (!isGrounded && isTouchingWall && movementInputDirection != 0 && movementInputDirection != facingDirection)
             {
                 WallJump();
             }
@@ -239,9 +240,9 @@ public class PlayerController : MonoBehaviour
             jumpTimer -= Time.deltaTime;
         }
 
-        if (hasWallJumped)
+        if (wallJumpTimer > 0)
         {
-            if (wallJumpTimer > 0 && movementInputDirection == -lastWallJumpDirection)
+            if (hasWallJumped && movementInputDirection == -lastWallJumpDirection)
             {
                 rb.velocity = new Vector2(rb.velocity.x, 0.0f);
                 hasWallJumped = false;
@@ -266,7 +267,6 @@ public class PlayerController : MonoBehaviour
             jumpTimer = 0;
             isAttemptingToJump = false;
             checkJumpMultiplier = true;
-            Debug.Log("Normal jump");
         }
     }
 
@@ -288,9 +288,8 @@ public class PlayerController : MonoBehaviour
             canMove = true;
             canFlip = true;
             hasWallJumped = true;
-            lastWallJumpDirection = -facingDirection;
             wallJumpTimer = wallJumpTimerSet;
-            Debug.Log("Wall jump");
+            lastWallJumpDirection = -facingDirection;
         }
     }
     
