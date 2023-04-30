@@ -16,21 +16,26 @@ public class PlayerController : MonoBehaviour
     private bool checkJumpMultiplier;
     private bool canMove;
     private bool canFlip;
+    private bool hasWallJumped;
     public bool isTouchingWall;
     public bool isWallSliding;
     public bool isGrounded;
 
     private int amountOfJumpsLeft;
     private int facingDirection = 1;
+    private int lastWallJumpDirection;
     public int amountOfJumps = 1;
 
     private float movementInputDirection;
     private float jumpTimer;
     private float turnTimer;
+    private float wallJumpTimer;
+
     public float movementSpeed = 9.0f;
     public float jumpForce = 20.0f;
     public float jumpTimerSet = 0.15f;
     public float turnTimerSet = 0.1f;
+    public float wallJumpTimerSet = 0.5f;
     public float groundCheckRadius;
     public float wallCheckDistance = 0.65f;
     public float wallSlideSpeed = 1;
@@ -233,6 +238,23 @@ public class PlayerController : MonoBehaviour
         {
             jumpTimer -= Time.deltaTime;
         }
+
+        if (hasWallJumped)
+        {
+            if (wallJumpTimer > 0 && movementInputDirection == -lastWallJumpDirection)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+                hasWallJumped = false;
+            }
+            else if (wallJumpTimer <= 0)
+            {
+                hasWallJumped = false;
+            }
+            else
+            {
+                wallJumpTimer -= Time.deltaTime;
+            }
+        }
     }
 
     private void NormalJump()
@@ -265,6 +287,9 @@ public class PlayerController : MonoBehaviour
             turnTimer = 0;
             canMove = true;
             canFlip = true;
+            hasWallJumped = true;
+            lastWallJumpDirection = -facingDirection;
+            wallJumpTimer = wallJumpTimerSet;
             Debug.Log("Wall jump");
         }
     }
