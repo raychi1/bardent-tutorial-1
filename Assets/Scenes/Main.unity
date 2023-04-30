@@ -20041,8 +20041,8 @@ MonoBehaviour:
   isTouchingWall: 0
   isWallSliding: 0
   isGrounded: 0
-  canJump: 0
   amountOfJumps: 2
+  jumpTimerSet: 0.15
   groundCheckRadius: 0.3
   wallCheckDistance: 0.4
   wallSlideSpeed: 2
