@@ -20,7 +20,11 @@ public class PlayerController : MonoBehaviour
     public bool isTouchingWall;
     public bool isWallSliding;
     public bool isGrounded;
-
+    
+    private bool isTouchingLedge;
+    private bool canClimbLedge = false;
+    private bool ledgeDetected;
+    
     private int amountOfJumpsLeft;
     private int facingDirection = 1;
     private int lastWallJumpDirection;
@@ -44,12 +48,23 @@ public class PlayerController : MonoBehaviour
     public float variableJumpHeightMultiplier = 0.5f;
     public float wallHopForce = 10f;
     public float wallJumpForce = 30f; //old is 20
+
+    public float ledgeClimbXOffset1 = 0f;
+    public float ledgeClimbYOffset1 = 0f;
+    public float ledgeClimbXOffset2 = 0f;
+    public float ledgeClimbYOffset2 = 0f;
+    
+
+    private Vector2 ledgePositionBottom;
+    private Vector2 ledgePosition1;
+    private Vector2 ledgePosition2;
     
     public Vector2 wallHopDirection = new Vector2(1f, 0.5f);
     public Vector2 wallJumpDirection = new Vector2(1f, 2f);
 
     public Transform groundCheck;
     public Transform wallCheck;
+    public Transform ledgeCheck;
     public LayerMask whatIsGround;
     
     // Start is called before the first frame update
@@ -71,6 +86,7 @@ public class PlayerController : MonoBehaviour
         CheckIfCanJump();
         CheckIfWallSliding();
         CheckJump();
+        CheckLedgeClimb();
     }
 
     private void FixedUpdate()
@@ -116,7 +132,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (!canMove)
+        if (turnTimer >= 0)
         {
             turnTimer -= Time.deltaTime;
             if (turnTimer <= 0)
@@ -159,8 +175,63 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 
         isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, whatIsGround); //transform.right is used to project to the right side of a character (so if we flip, it will work on left no problem)
+        isTouchingLedge = Physics2D.Raycast(ledgeCheck.position, transform.right, wallCheckDistance, whatIsGround);
+
+        if (isTouchingWall && !isTouchingLedge && !ledgeDetected) // added !ledgeDetected to only call this thing once
+        {
+            ledgeDetected = true;
+            ledgePositionBottom = wallCheck.position;
+        }
+        
     }
-    
+
+    private void CheckLedgeClimb()
+    {
+        if (ledgeDetected && !canClimbLedge)
+        {
+            canClimbLedge = true;
+
+            if (isFacingRight)
+            {
+                ledgePosition1 =
+                    new Vector2(Mathf.Floor(ledgePositionBottom.x + wallCheckDistance) - ledgeClimbXOffset1,
+                        Mathf.Floor(ledgePositionBottom.y) + ledgeClimbYOffset1);
+                ledgePosition2 =
+                    new Vector2(Mathf.Floor(ledgePositionBottom.x + wallCheckDistance) + ledgeClimbXOffset2,
+                        Mathf.Floor(ledgePositionBottom.y) + ledgeClimbYOffset2);
+            }
+            else // facing left
+            {
+                ledgePosition1 = 
+                    new Vector2(Mathf.Ceil(ledgePositionBottom.x - wallCheckDistance) + ledgeClimbXOffset1,
+                        Mathf.Floor(ledgePositionBottom.y) + ledgeClimbYOffset1);
+                ledgePosition2 = 
+                    new Vector2(Mathf.Ceil(ledgePositionBottom.x - wallCheckDistance) - ledgeClimbXOffset2,
+                        Mathf.Floor(ledgePositionBottom.y) + ledgeClimbYOffset2);
+            }
+
+            canMove = false;
+            canFlip = false;
+            
+            anim.SetBool("canClimbLedge", canClimbLedge);
+        }
+
+        if (canClimbLedge)
+        {
+            transform.position = ledgePosition1; // hold player in ledgePosition1 every frame (maybe there is some more optimized way to set its transform position only in one frame)
+        }
+    }
+
+    public void FinishLedgeClimb()
+    {
+        canClimbLedge = false;
+        transform.position = ledgePosition2;
+        canMove = true;
+        canFlip = true;
+        ledgeDetected = false;
+        anim.SetBool("canClimbLedge", canClimbLedge);
+    }
+
     private void CheckIfCanJump()
     {
         if (isGrounded && rb.velocity.y <= 0.01f)
@@ -186,7 +257,7 @@ public class PlayerController : MonoBehaviour
 
     private void CheckIfWallSliding()
     {
-        if (isTouchingWall && movementInputDirection == facingDirection && rb.velocity.y < 0)
+        if (isTouchingWall && movementInputDirection == facingDirection && rb.velocity.y < 0 && !canClimbLedge)
         {
             isWallSliding = true;
         }
